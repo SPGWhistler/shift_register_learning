@@ -10,6 +10,8 @@ dataBit = "CSID0"
 LATCH = "CSID1"
 CLK = "CSID2"
 
+state = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
 GPIO.setup(LATCH, GPIO.OUT)
 GPIO.setup(CLK, GPIO.OUT)
 GPIO.setup(dataBit, GPIO.OUT)
@@ -27,24 +29,47 @@ def serLatch():
 	GPIO.output(LATCH, GPIO.HIGH)
 	return
 
-def ssrWrite(value):
-	for x in range(0, 16):
-		if value == x:
-			GPIO.output(dataBit, GPIO.HIGH)
+def sendBit(value):
+	GPIO.output(dataBit, value)
+	pulseCLK()
+	return
+
+def ssrWrite(p, newval):
+	for pin, val in enumerate(state):
+		if pin == p:
+			sendBit(newval)
+			state[pin] = newval
 		else:
-			GPIO.output(dataBit, GPIO.LOW)
-		pulseCLK()
+			sendBit(val)
 	serLatch()
 	return
 
-while 1:
-	temp = 0
-	for j in range(0, 16):
-		ssrWrite(temp)
-		temp = temp + 1
-		time.sleep(.5)
+ssrWrite(0, 1)
+ssrWrite(1, 1)
+ssrWrite(2, 1)
+ssrWrite(3, 1)
+ssrWrite(4, 1)
+ssrWrite(5, 1)
+ssrWrite(6, 1)
+ssrWrite(7, 1)
+ssrWrite(8, 0)
+ssrWrite(9, 0)
+ssrWrite(10, 0)
+ssrWrite(11, 0)
+ssrWrite(12, 0)
+ssrWrite(13, 0)
+ssrWrite(14, 0)
+ssrWrite(15, 0)
 
-	for j in range(0, 16):
-		temp = temp - 1
-		ssrWrite(temp)
-		time.sleep(.5)
+#while 1:
+	#temp = 0
+	# This is just looping over each output, it doesn't have to be 16
+	# for j in range(0, 16):
+	# 	ssrWrite(temp)
+	# 	temp = temp + 1
+	# 	time.sleep(.5)
+
+	# for j in range(0, 16):
+	# 	temp = temp - 1
+	# 	ssrWrite(temp)
+	# 	time.sleep(.5)
